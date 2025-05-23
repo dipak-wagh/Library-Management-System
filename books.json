@@ -1,0 +1,20 @@
+[
+  {
+    "isbn": "20001",
+    "title": "python programming",
+    "author": "programmer",
+    "available": true
+  },
+  {
+    "isbn": "1001",
+    "title": "c language",
+    "author": "dennis",
+    "available": true
+  },
+  {
+    "isbn": "10003",
+    "title": "python",
+    "author": "programmer",
+    "available": true
+  }
+]

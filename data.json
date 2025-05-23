@@ -1,0 +1,11 @@
+{
+    "books": [
+        {
+            "isbn": "10001",
+            "title": "c programming",
+            "author": "dennis ritchie",
+            "available": true
+        }
+    ],
+    "members": []
+}
