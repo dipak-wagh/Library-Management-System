@@ -1,61 +1,63 @@
 from library import Library
 
+def displayMenu():
+    print("\nLibrary Management System")
+    print("1. Register Member")
+    print("2. Add Book")
+    print("3. Borrow Book")
+    print("4. Return Book")
+    print("5. View Available Books")
+    print("6. View Member History")
+    print("7. Search Books")
+    print("8. Exit")
+
 def main():
     library = Library()
-    library.load_data()
+    library.loadData()
 
     while True:
-        print("\nLibrary Menu")
-        print("1. Register Member")
-        print("2. Add Book")
-        print("3. Borrow Book")
-        print("4. Return Book")
-        print("5. View Member History")
-        print("6. View Available Books")
-        print("7. Search Books by Title or Author")
-        print("8. Exit")
+        displayMenu()
+        choice = input("Enter your choice: ")
 
-        choice = input("Enter any choice: ")
+        if choice == '1':
+            memberId = input("Enter Member ID: ")
+            name = input("Enter Member Name: ")
+            library.registerMember(memberId, name)
 
-        if choice == "1":
-            member_id = input("Enter member ID: ")
-            name = input("Enter name: ")
-            library.register_member(member_id, name)
-
-        elif choice == "2":
+        elif choice == '2':
             isbn = input("Enter ISBN: ")
-            title = input("Enter title: ")
-            author = input("Enter author: ")
-            library.add_book(isbn, title, author)
+            title = input("Enter Book Title: ")
+            author = input("Enter Author Name: ")
+            library.addBook(isbn, title, author)
 
-        elif choice == "3":
-            member_id = input("Enter member ID: ")
-            isbn = input("Enter ISBN of book to borrow: ")
-            library.borrow_book(member_id, isbn)
+        elif choice == '3':
+            memberId = input("Enter Member ID: ")
+            isbn = input("Enter ISBN: ")
+            library.borrowBook(memberId, isbn)
 
-        elif choice == "4":
-            member_id = input("Enter member ID: ")
-            isbn = input("Enter ISBN of book to return: ")
-            library.return_book(member_id, isbn)
+        elif choice == '4':
+            memberId = input("Enter Member ID: ")
+            isbn = input("Enter ISBN: ")
+            library.returnBook(memberId, isbn)
 
-        elif choice == "5":
-            member_id = input("Enter member ID: ")
-            library.view_member_history(member_id)
+        elif choice == '5':
+            library.viewAvailableBooks()
 
-        elif choice == "6":
-            library.view_available_books()
+        elif choice == '6':
+            memberId = input("Enter Member ID: ")
+            library.viewMemberHistory(memberId)
 
-        elif choice == "7":
-            keyword = input("Enter keyword to search (title or author): ")
-            library.search_books(keyword)
+        elif choice == '7':
+            keyword = input("Enter title or author keyword: ")
+            library.searchBooks(keyword)
 
-        elif choice == "8":
-            print("Saving data")
-            library.save_data()
+        elif choice == '8':
+            library.saveData()
+            print("Library data saved. Exiting...")
             break
 
         else:
-            print("Invalid choice")
+            print("Invalid choice. Please try again.")
 
 if __name__ == "__main__":
     main()

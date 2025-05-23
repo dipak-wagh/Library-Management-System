@@ -10,32 +10,32 @@ class Book:
         self.available = available
 
 class Member:
-    def __init__(self, member_id, name):
-        self.id = member_id
+    def __init__(self, memberId, name):
+        self.id = memberId
         self.name = name
-        self.borrowed_books = []  
+        self.borrowedBooks = []
 
 class Library:
     def __init__(self):
-        self.books = {}  
-        self.members = {} 
+        self.books = {}
+        self.members = {}
 
-    def add_book(self, isbn, title, author):
+    def addBook(self, isbn, title, author):
         if isbn in self.books:
             print("Book with this ISBN already exists.")
             return
         self.books[isbn] = Book(isbn, title, author)
         print(f"Book '{title}' added successfully.")
 
-    def register_member(self, member_id, name):
-        if member_id in self.members:
+    def registerMember(self, memberId, name):
+        if memberId in self.members:
             print("Member already registered.")
             return
-        self.members[member_id] = Member(member_id, name)
+        self.members[memberId] = Member(memberId, name)
         print(f"Member '{name}' registered successfully.")
 
-    def borrow_book(self, member_id, isbn):
-        if member_id not in self.members:
+    def borrowBook(self, memberId, isbn):
+        if memberId not in self.members:
             print("Member not found.")
             return
         if isbn not in self.books:
@@ -43,84 +43,77 @@ class Library:
             return
 
         book = self.books[isbn]
-        member = self.members[member_id]
+        member = self.members[memberId]
 
         if not book.available:
             print("Book is currently not available.")
             return
 
-       
         book.available = False
+        borrowDate = date.today().isoformat()
+        member.borrowedBooks.append({"isbn": isbn, "borrowDate": borrowDate})
 
-        borrow_date = date.today().isoformat() 
-        member.borrowed_books.append({"isbn": isbn, "borrow_date": borrow_date})
+        print(f"Book '{book.title}' borrowed by member '{member.name}' on {borrowDate}.")
 
-        print(f"Book '{book.title}' borrowed by member '{member.name}' on {borrow_date}.")
-
-    def return_book(self, member_id, isbn):
-        if member_id not in self.members:
+    def returnBook(self, memberId, isbn):
+        if memberId not in self.members:
             print("Member not found.")
             return
         if isbn not in self.books:
             print("Book not found.")
             return
 
-        member = self.members[member_id]
+        member = self.members[memberId]
         book = self.books[isbn]
 
-       
-        borrowed_entry = None
-        for entry in member.borrowed_books:
+        borrowedEntry = None
+        for entry in member.borrowedBooks:
             if entry['isbn'] == isbn:
-                borrowed_entry = entry
+                borrowedEntry = entry
                 break
 
-        if not borrowed_entry:
+        if not borrowedEntry:
             print("This member did not borrow this book.")
             return
 
-      
-        return_date = date.today()
-        borrow_date = datetime.strptime(borrowed_entry['borrow_date'], '%Y-%m-%d').date()
-        days_borrowed = (return_date - borrow_date).days
+        returnDate = date.today()
+        borrowDate = datetime.strptime(borrowedEntry['borrowDate'], '%Y-%m-%d').date()
+        daysBorrowed = (returnDate - borrowDate).days
 
-        if days_borrowed > 7:
-            late_fee = days_borrowed - 7
-            print(f"Book returned late by {late_fee} days. Late fee is ${late_fee}.")
+        if daysBorrowed > 7:
+            lateFee = daysBorrowed - 7
+            print(f"Book returned late by {lateFee} days. Late fee is ${lateFee}.")
         else:
             print("Book returned on time. No late fee.")
 
-     
         book.available = True
-
-      
-        member.borrowed_books.remove(borrowed_entry)
+        member.borrowedBooks.remove(borrowedEntry)
 
         print(f"Book '{book.title}' returned by member '{member.name}'.")
 
-    def view_available_books(self):
+    def viewAvailableBooks(self):
         print("Available books:")
         for book in self.books.values():
             if book.available:
                 print(f"ISBN: {book.isbn}, Title: {book.title}, Author: {book.author}")
 
-    def view_member_history(self, member_id):
-        if member_id not in self.members:
+    def viewMemberHistory(self, memberId):
+        if memberId not in self.members:
             print("Member not found.")
             return
-        member = self.members[member_id]
-        if not member.borrowed_books:
+        member = self.members[memberId]
+        if not member.borrowedBooks:
             print(f"Member '{member.name}' has no borrowed books currently.")
         else:
             print(f"Borrowed books for member '{member.name}':")
-            for entry in member.borrowed_books:
-                print(f"ISBN: {entry['isbn']}, Borrow Date: {entry['borrow_date']}")
+            for entry in member.borrowedBooks:
+                print(f"ISBN: {entry['isbn']}, Borrow Date: {entry['borrowDate']}")
 
-    def load_data(self):
+    def loadData(self):
         if os.path.exists("books.json"):
             with open("books.json", "r") as f:
-                books_data = json.load(f)
-                for book in books_data:
+                booksData = json.load(f)
+                for book in booksData:
                     self.books[book['isbn']] = Book(
                         isbn=book['isbn'],
                         title=book['title'],
@@ -130,14 +123,14 @@ class Library:
 
         if os.path.exists("members.json"):
             with open("members.json", "r") as f:
-                members_data = json.load(f)
-                for member in members_data:
+                membersData = json.load(f)
+                for member in membersData:
                     m = Member(member['id'], member['name'])
-                    m.borrowed_books = member.get('borrowed_books', [])
+                    m.borrowedBooks = member.get('borrowedBooks', [])
                     self.members[member['id']] = m
 
-    def save_data(self):
-        books_data = [
+    def saveData(self):
+        booksData = [
             {
                 "isbn": b.isbn,
                 "title": b.title,
@@ -147,23 +140,22 @@ class Library:
             for b in self.books.values()
         ]
 
-        members_data = [
+        membersData = [
             {
                 "id": m.id,
                 "name": m.name,
-                "borrowed_books": m.borrowed_books
+                "borrowedBooks": m.borrowedBooks
             }
             for m in self.members.values()
         ]
 
         with open("books.json", "w") as f:
-            json.dump(books_data, f, indent=2)
+            json.dump(booksData, f, indent=2)
 
         with open("members.json", "w") as f:
-            json.dump(members_data, f, indent=2)
+            json.dump(membersData, f, indent=2)
 
-
-    def search_books(self, keyword):
+    def searchBooks(self, keyword):
         keyword = keyword.lower()
         results = []
         for book in self.books.values():
